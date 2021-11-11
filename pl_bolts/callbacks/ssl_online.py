@@ -125,7 +125,6 @@ class SSLOnlineEvaluator(Callback):  # pragma: no cover
         mlp_loss = F.cross_entropy(mlp_logits, y)
 
         acc = accuracy(mlp_logits.softmax(-1), y)
-
         return acc, mlp_loss
 
     def on_train_batch_end(
@@ -138,6 +137,7 @@ class SSLOnlineEvaluator(Callback):  # pragma: no cover
         dataloader_idx: int,
     ) -> None:
         train_acc, mlp_loss = self.shared_step(pl_module, batch)
+        print('Computed train acc: ', train_acc)
 
         # update finetune weights
         mlp_loss.backward()
@@ -157,6 +157,7 @@ class SSLOnlineEvaluator(Callback):  # pragma: no cover
         dataloader_idx: int,
     ) -> None:
         val_acc, mlp_loss = self.shared_step(pl_module, batch)
+        print('Computed val acc: ', val_acc)
         pl_module.log("online_val_acc", val_acc, on_step=False, on_epoch=True, sync_dist=True)
         pl_module.log("online_val_loss", mlp_loss, on_step=False, on_epoch=True, sync_dist=True)
 
